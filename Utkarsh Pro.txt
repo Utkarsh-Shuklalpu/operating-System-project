@@ -1,0 +1,148 @@
+#include<stdio.h>
+#include<stdlib.h>
+#define MAX 50
+int N,temp,btime=0,min,k=1,m=1,sum=0,wsum=0,pri=0,r=0;
+int process[MAX],burstt[MAX],arrivalt[MAX];
+float priority[MAX],waitingt[MAX],max;
+void input()
+{
+	printf("Enter total no of process:");
+	scanf("%d",&N);
+	for(int i=0;i<N;i++)
+	{
+		process[i]=i+1;
+	}
+	for(int i=0;i<N;i++)
+	{
+		printf("\nEnter burst time of process p%d\n",i+1);
+		scanf("%d",&burstt[i]);
+		printf("Enter Arrival time of process p%d\n",i+1);
+		scanf("%d",&arrivalt[i]);
+	}
+	printf("\n\n-----------Process----------------\n");
+	printf("\nProcess\tArrival Time\tBurst Time");
+	for(int i=0;i<N;i++)
+	{
+		if(arrivalt[i]<0||burstt[i]<0)
+		{
+			arrivalt[i]=0;
+			burstt[i]=0;
+		}
+	}
+	for(int i=0;i<N;i++)
+	{
+		printf("\np%d\t\t%d\t\t%d",i+1,arrivalt[i],burstt[i]);
+	}
+}
+void calculation()
+{
+	for(int i=0;i<N;i++)              //sorting of arrival time using bubble sort
+	{
+		for(int j=0;j<N;j++)
+		{
+			if(arrivalt[i]<arrivalt[j])
+			{
+				temp=process[j];
+				process[j]=process[i];
+				process[i]=temp;
+				temp=arrivalt[j];
+				arrivalt[j]=arrivalt[i];
+				arrivalt[i]=temp;
+				temp=burstt[j];
+				burstt[j]=burstt[i];
+				burstt[i]=temp;
+			}
+		}
+	}
+	for(int i=0;i<N;i++)              //sorting of arrival time using bubble sort
+	{
+		for(int j=i+1;j<N;j++)
+		{
+			if(arrivalt[i]==arrivalt[j]&&burstt[i]>burstt[j])
+			{
+				temp=process[j];
+				process[j]=process[i];
+				process[i]=temp;
+				temp=arrivalt[j];
+				arrivalt[j]=arrivalt[i];
+				arrivalt[i]=temp;
+				temp=burstt[j];
+				burstt[j]=burstt[i];
+				burstt[i]=temp;
+			}
+		}
+	}
+	for(int i=0;i<N;i++)
+	{
+		priority[i]=1;
+		waitingt[i]=0;
+	}
+	for(int j=0;j<N;j++)                                                       
+	{
+		btime=btime+burstt[j];
+		min=burstt[k];
+		for(int i=k;i<N;i++)
+		{
+			if(priority[i]<priority[j])
+			{
+				if (btime>=arrivalt[i] && burstt[i]<min)
+				{
+				temp=process[k];
+				process[k]=process[i];
+				process[i]=temp;
+				temp=arrivalt[k];
+				arrivalt[k]=arrivalt[i];
+				arrivalt[i]=temp;
+				temp=burstt[k];
+				burstt[k]=burstt[i];
+				burstt[i]=temp;
+				temp=priority[k];
+				priority[k]=priority[i];
+				priority[i]=temp;
+				}
+			}
+		}
+		for(int b=0;b<=j;b++)
+		{
+			sum+=burstt[b];
+		}
+		for(int a=m;a<N;a++)
+		{
+			waitingt[a]=sum-arrivalt[a];
+			sum=sum+burstt[a];
+			if(waitingt[a]<0)
+			{
+				waitingt[a]=0;
+			}
+		} 
+		for(int c=m;c<N;c++)
+		{
+			priority[c]=1+ (waitingt[c]/burstt[c]);
+		}
+		m++;
+		sum=0;
+		k++;
+	}
+}
+void display()
+{
+	printf("\n-----------Process----------------\n");
+	printf("\nProcess\tArrival Time\tBurst Time\tProirity\twaiting time");
+	for(int i=0;i<N;i++)
+	{
+		printf("\np%d\t\t%d\t\t%d\t%.2f\t\t%.2f",process[i],arrivalt[i],burstt[i],priority[i],waitingt[i]);
+	}
+	float avw=0;
+	for(int i=0;i<N;i++)
+	{
+		avw+=waitingt[i];
+	}
+	printf("\n\n\t Average Waiting Time=%.2f",avw/N);
+}
+int main()
+{
+	input();
+	calculation();
+	display();
+	return 0;
+}
